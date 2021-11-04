@@ -28,18 +28,42 @@ class JsonDefaultEnconding(json.JSONEncoder):
 
 def FileMain(FileType,MsPath,MmPath,MethodType,itera,theta,ThresholdSeg):
     if FileType==0:
-        temp = MDFReaderClass(MsPath, MmPath)
-        MDFPreprocessClass(temp.Message)
+
+        try:
+            phan = MDFReaderClass(MsPath, MmPath)
+        except:
+            return 1,None,None,None,None,None,None,None,None,None
+
+        try:
+            MDFPreprocessClass(phan.Message)
+        except:
+            return 2,None,None,None,None,None,None,None,None,None
+
     elif FileType==1:
-        temp = JReaderClass(MmPath)
-        MDFPreprocessClass(temp.Message)
 
-    if MethodType==0:
-        ImgData = MReconClass(temp.Message, itera,np.linalg.norm(temp.Message[MEASUREMENT][AUXSIGNAL], ord='fro') * theta)
-    elif MethodType==1:
-        ImgData= XReconClass(temp.Message)
+        try:
+            phan = JReaderClass(MmPath)
+        except:
+            return 1, None, None, None, None, None, None, None, None, None
 
-    return ImgData.get_ImagSiganl()[1][0], \
+        try:
+            MDFPreprocessClass(phan.Message)
+        except:
+            return 2, None, None, None, None, None, None, None, None, None
+
+    try:
+        if MethodType==0:
+            ImgData = MReconClass(phan.Message, itera,np.linalg.norm(phan.Message[MEASUREMENT][AUXSIGNAL], ord='fro') * theta)
+        elif MethodType==1:
+            ImgData= XReconClass(phan.Message)
+        else:
+            raise Exception
+    except:
+        return 3, None, None, None, None, None, None, None, None, None
+
+    try:
+        return 0,\
+           ImgData.get_ImagSiganl()[1][0], \
            ImgData.get_ImagSiganl()[1][1], \
            ImgData.get_ImagSiganl()[1][2], \
            PostprocessClass(ImgData.get_ImagSiganl()[1][0]).get_GrayLevel(), \
@@ -48,6 +72,8 @@ def FileMain(FileType,MsPath,MmPath,MethodType,itera,theta,ThresholdSeg):
            PostprocessClass(ImgData.get_ImagSiganl()[1][0]).get_ThresholdSeg(ThresholdSeg), \
            PostprocessClass(ImgData.get_ImagSiganl()[1][1]).get_ThresholdSeg(ThresholdSeg), \
            PostprocessClass(ImgData.get_ImagSiganl()[1][2]).get_ThresholdSeg(ThresholdSeg)
+    except:
+        return 4, None, None, None, None, None, None, None, None, None
 
 def SimulationMain(MethodType,
                    PhanType,Temperature,Diameter,MagSaturation,Concentration,
@@ -56,39 +82,66 @@ def SimulationMain(MethodType,
                    RepetitionTime,SampleFrequency,
                    Itera,Theta,Delta,ThresholdSeg):
 
-    if PhanType==0:
-        phan = PPhantomClass(Temperature,Diameter,MagSaturation,Concentration)
-    elif PhanType==1:
-        phan = EPhantomClass(Temperature, Diameter, MagSaturation, Concentration)
+    try:
+        if PhanType==0:
+            phan = PPhantomClass(Temperature,Diameter,MagSaturation,Concentration)
+        elif PhanType==1:
+            phan = EPhantomClass(Temperature, Diameter, MagSaturation, Concentration)
+    except:
+        return 1, None, None, None, None, None, None
 
     if MethodType==0:
-        scanner = MScannerClass(phan,
+        try:
+            scanner = MScannerClass(phan,
                                 SelectGradietX, SelectGradietY,
                                 DriveFrequencyX, DriveFrequencyY, DriveAmplitudeX, DriveAmplitudeY,
                                 RepetitionTime, SampleFrequency,Delta)
+        except:
+            return 1, None, None, None, None, None, None
 
-        PreprocessClass(scanner.Message)
+        try:
+            PreprocessClass(scanner.Message)
+        except:
+            return 2, None, None, None, None, None, None
 
-        ImgData = MReconClass(scanner.Message,Itera,Theta)
+        try:
+            ImgData = MReconClass(scanner.Message,Itera,Theta)
+            ResultImage = ImgData.get_ImagSiganl()[1][0]
+        except:
+            return 3, None, None, None, None, None, None
 
     elif MethodType==1:
-        scanner = XScannerClass(phan,
+        try:
+            scanner = XScannerClass(phan,
                               SelectGradietX,SelectGradietY,
                               DriveFrequencyX,DriveFrequencyY,DriveAmplitudeX,DriveAmplitudeY,
                               RepetitionTime,SampleFrequency)
+        except:
+            return 1, None, None, None, None, None, None
 
-        PreprocessClass(scanner.Message)
+        try:
+            PreprocessClass(scanner.Message)
+        except:
+            return 2, None, None, None, None, None, None
 
-        ImgData = XReconClass(scanner.Message)
+        try:
+            ImgData = XReconClass(scanner.Message)
+            ResultImage = ImgData.get_ImagSiganl()[1][0]
+        except:
+            return 3, None, None, None, None, None, None
 
-    ResultImage=ImgData.get_ImagSiganl()[1][0]
 
-    return phan.get_PhantomMatrix(), \
+
+    try:
+        return 0,\
+           phan.get_PhantomMatrix(), \
            ResultImage, \
            PostprocessClass(ResultImage).get_GrayLevel(), \
            scanner.Message[MEASUREMENT][MEANUMBER][0], \
            scanner.Message[MEASUREMENT][MEANUMBER][1], \
            PostprocessClass(ResultImage).get_ThresholdSeg(ThresholdSeg)
+    except:
+        return 4, None, None, None, None, None, None
 
 def DelFiles(path_file):
     ls = os.listdir(path_file)
@@ -110,12 +163,15 @@ if __name__ == "__main__":
     print("*********************************************************")
     instr=''
     instr = input("Please enter the Number: ")
+    flag = 0
     while not instr=='Q':
         if instr=='1':
             MsPath = input("Please enter the SystemMatrix File Path: ")
             MmPath = input("Please enter the Measurement File Path: ")
             print("Reconstructing...")
-            x,y,z,x1,y1,z1,x2,y2,z2 = FileMain(0, MsPath, MmPath, 0, 1, 1, 150)
+            flag,x,y,z,x1,y1,z1,x2,y2,z2 = FileMain(0, MsPath, MmPath, 0, 1, 1, 150)
+            if flag!=0:
+                break
             DelFiles("./TempImage/")
             ImagerClass.WriteImage(x, "./TempImage/", "XY.jpg")
             ImagerClass.WriteImage(y, "./TempImage/", "XZ.jpg")
@@ -132,7 +188,9 @@ if __name__ == "__main__":
             MsPath = None
             MmPath = input("Please enter the JSON File Path: ")
             print("Reconstructing...")
-            x,y,z,x1,y1,z1,x2,y2,z2 = FileMain(1, MsPath, MmPath, 0, 1, 1, 150)
+            flag,x,y,z,x1,y1,z1,x2,y2,z2 = FileMain(1, MsPath, MmPath, 0, 1, 1, 150)
+            if flag!=0:
+                break
             DelFiles("./TempImage/")
             ImagerClass.WriteImage(x, "./TempImage/", "XY.jpg")
             ImagerClass.WriteImage(y, "./TempImage/", "XZ.jpg")
@@ -149,7 +207,9 @@ if __name__ == "__main__":
             MsPath = None
             MmPath = input("Please enter the JSON File Path: ")
             print("Reconstructing...")
-            x, y, z, x1, y1, z1, x2, y2, z2 = FileMain(1, MsPath, MmPath, 1, 1, 1, 150)
+            flag,x, y, z, x1, y1, z1, x2, y2, z2 = FileMain(1, MsPath, MmPath, 1, 1, 1, 150)
+            if flag!=0:
+                break
             DelFiles("./TempImage/")
             ImagerClass.WriteImage(x, "./TempImage/", "XY.jpg")
             ImagerClass.WriteImage(y, "./TempImage/", "XZ.jpg")
@@ -164,31 +224,45 @@ if __name__ == "__main__":
             break
         elif instr=='4':
             print("Use default parameters,Simulating...")
-            P,I,G,X,Y,T=SimulationMain(0,0, 20, 30e-9, 8e5, 5e7,
+            flag,P,I,G,X,Y,T=SimulationMain(0,0, 20, 30e-9, 8e5, 5e7,
                            2.0, 2.0,
                            2500000.0 / 102.0, 2500000.0 / 96.0, 12e-3, 12e-3,
                            6.528e-4, 2.5e6,
                            1, 1, 5e7, 150)
+            if flag!=0:
+                break
             DelFiles("./TempImage/")
             ImagerClass.WriteImage(P, "./TempImage/", "Phantom.jpg")
             ImagerClass.WriteImage(I, "./TempImage/", "Reconstruction Result.jpg")
-            ImagerClass.WriteImage(G, "./TempImage/", "Threshold Segmetion.jpg")
-            ImagerClass.WriteImage(T, "./TempImage/", "GrayLevel histogram.jpg")
+            ImagerClass.WriteImage(G, "./TempImage/", "GrayLevel histogram.jpg")
+            ImagerClass.WriteImage(T, "./TempImage/", "Threshold Segmetion.jpg")
             print("The result is written into the path:" + os.getcwd() + "/TempImage/")
             break
         elif instr=='5':
             print("Use default parameters,Simulating...")
-            P,I,G,X,Y,T=SimulationMain(1, 0, 20, 30e-9, 8e5, 5e7,
-                           2.0, 2.0,
-                           2500000.0 / 102.0, 2500000.0 / 96.0, 12e-3, 12e-3,
-                           6.528e-4, 2.5e6,
-                           1, 1, 5e7, 150)
+            flag,P,I,G,X,Y,T=SimulationMain(1, 0, 20, 30e-9, 8e5, 5e7,
+                                       2.0, 2.0,
+                                       2500000.0 / 102.0, 2500000.0 / 96.0, 12e-3, 12e-3,
+                                       6.528e-4, 2.5e6,
+                                       1, 1, 5e7, 150)
+
+            if flag!=0:
+                break
             DelFiles("./TempImage/")
             ImagerClass.WriteImage(P, "./TempImage/", "Phantom.jpg")
             ImagerClass.WriteImage(I, "./TempImage/", "Reconstruction Result.jpg")
-            ImagerClass.WriteImage(G, "./TempImage/", "Threshold Segmetion.jpg")
-            ImagerClass.WriteImage(T, "./TempImage/", "GrayLevel histogram.jpg")
+            ImagerClass.WriteImage(G, "./TempImage/", "GrayLevel histogram.jpg")
+            ImagerClass.WriteImage(T, "./TempImage/", "Threshold Segmetion.jpg")
             print("The result is written into the path:" + os.getcwd() + "/TempImage/")
             break
         else:
             instr = input("Wrong input, Please re-enter:")
+
+    if flag == 1:
+        print("DATA ACCESS module is abnormal.")
+    elif flag == 2:
+        print("DATA PREPROCESSING module is abnormal.")
+    elif flag == 3:
+        print("IMAGE RECONSTRUCTION module is abnormal.")
+    elif flag == 4:
+        print("IMAGE POSTPROCESSING module is abnormal.")

@@ -8,7 +8,7 @@ import numpy as np
 from Config.UIConstantListEn import *
 #from Config.UIConstantList import *
 
-from PyQt5.QtWidgets import  QApplication, QMainWindow,QFileDialog
+from PyQt5.QtWidgets import  QMainWindow,QFileDialog,QMessageBox
 
 from PyQt5.QtCore import  Qt,pyqtSlot
 
@@ -33,7 +33,19 @@ class QmyMainWindow(QMainWindow):
 
    def __drawHist(self, FileType,MsPath,MmPath,MethodIndex,itera,theta,thresholdseg):
 
-      x,y,z,x1,y1,z1,x2,y2,z2=FileMain(FileType,MsPath,MmPath,MethodIndex,itera,theta,thresholdseg)
+      flag,x,y,z,x1,y1,z1,x2,y2,z2=FileMain(FileType,MsPath,MmPath,MethodIndex,itera,theta,thresholdseg)
+      if flag==1:
+          QMessageBox.critical(self, "ERROR", "DATA ACCESS module is abnormal.")
+          return None
+      elif flag==2:
+          QMessageBox.critical(self, "ERROR", "DATA PREPROCESSING module is abnormal.")
+          return None
+      elif flag==3:
+          QMessageBox.critical(self, "ERROR", "IMAGE RECONSTRUCTION module is abnormal.")
+          return None
+      elif flag==4:
+          QMessageBox.critical(self, "ERROR", "IMAGE POSTPROCESSING module is abnormal.")
+          return None
 
       self.ui.chartViewBar.figure.clear()
       if not x is None:
@@ -110,7 +122,7 @@ class QmyMainWindow(QMainWindow):
                    Delta,
                    ThresholdSeg):
 
-      x,y,z,xn,yn, seg=SimulationMain(MethodType,
+      flag,x,y,z,xn,yn, seg=SimulationMain(MethodType,
                                  PhanType,
                                  Temperature,
                                  Diameter,
@@ -128,6 +140,19 @@ class QmyMainWindow(QMainWindow):
                                  Theta,
                                  Delta,
                                  ThresholdSeg)
+
+      if flag==1:
+          QMessageBox.critical(self, "ERROR", "DATA ACCESS module is abnormal.")
+          return None
+      elif flag==2:
+          QMessageBox.critical(self, "ERROR", "DATA PREPROCESSING module is abnormal.")
+          return None
+      elif flag==3:
+          QMessageBox.critical(self, "ERROR", "IMAGE RECONSTRUCTION module is abnormal.")
+          return None
+      elif flag==4:
+          QMessageBox.critical(self, "ERROR", "IMAGE POSTPROCESSING module is abnormal.")
+          return None
 
       self.ui.chartViewPie.figure.clear()
       ax1 = self.ui.chartViewPie.figure.add_subplot(2, 4, 1, label="points")
@@ -233,27 +258,31 @@ class QmyMainWindow(QMainWindow):
       
    @pyqtSlot()
    def on_btnDrawPieChart_clicked(self):
-      MethodType=self.ui.comboMethod2.currentIndex()
-      PhanType=self.ui.comboCourse.currentIndex()
+      try:
+          MethodType=self.ui.comboMethod2.currentIndex()
+          PhanType=self.ui.comboCourse.currentIndex()
 
-      Temperature=float(self.ui.pieEdit_2.text())
-      Diameter=float(self.ui.pieEdit_3.text())*1e-9
-      MagSaturation=float(self.ui.pieEdit_4.text())*1e3
-      Concentration=float(self.ui.pieEdit_5.text())*1e-3
+          Temperature=float(self.ui.pieEdit_2.text())
+          Diameter=float(self.ui.pieEdit_3.text())*1e-9
+          MagSaturation=float(self.ui.pieEdit_4.text())*1e3
+          Concentration=float(self.ui.pieEdit_5.text())*1e-3
 
-      SelectGradietX=float(self.ui.pieEdit2_2.text())
-      SelectGradietY=float(self.ui.pieEdit3_2.text())
-      DriveFrequencyX=float(self.ui.pieEdit4_2.text())*1e3
-      DriveFrequencyY=float(self.ui.pieEdit5_2.text())*1e3
-      DriveAmplitudeX=float(self.ui.pieEdit6_2.text())*1e-3
-      DriveAmplitudeY=float(self.ui.pieEdit7_2.text())*1e-3
-      RepetitionTime=float(self.ui.pieEdit8_2.text())*1e-6
-      SampleFrequency=float(self.ui.pieEdit9_2.text())*1e6
+          SelectGradietX=float(self.ui.pieEdit2_2.text())
+          SelectGradietY=float(self.ui.pieEdit3_2.text())
+          DriveFrequencyX=float(self.ui.pieEdit4_2.text())*1e3
+          DriveFrequencyY=float(self.ui.pieEdit5_2.text())*1e3
+          DriveAmplitudeX=float(self.ui.pieEdit6_2.text())*1e-3
+          DriveAmplitudeY=float(self.ui.pieEdit7_2.text())*1e-3
+          RepetitionTime=float(self.ui.pieEdit8_2.text())*1e-6
+          SampleFrequency=float(self.ui.pieEdit9_2.text())*1e6
 
-      Iterations=int(self.ui.btnIteration2.text())
-      Theta=float(self.ui.btnTheta2.text())
-      Delta=float(self.ui.btnDelta2.text())
-      ThresholdSeg=int(self.ui.btnDelta3.text())
+          Iterations=int(self.ui.btnIteration2.text())
+          Theta=float(self.ui.btnTheta2.text())
+          Delta=float(self.ui.btnDelta2.text())
+          ThresholdSeg=int(self.ui.btnDelta3.text())
+      except:
+          QMessageBox.critical(self, "ERROR", "Parameter input abnormal.")
+          return None
 
       self.__drawHist2(MethodType,
                        PhanType,
