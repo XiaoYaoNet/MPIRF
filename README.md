@@ -29,8 +29,8 @@ To run `MPIRFUImain.py`, you also need to install:
   
 1.  `python MPIRFmain.py`, the result of the runing is shown in the figure:
 
-![](./Image/Fig1.png) 
+![](Image/Fig1.png) 
 
 2.  `python MPIRFUImain.py`, the result of the runing is shown in the figure:
 
-![](./Image/Fig2.png) 
+![](Image/Fig2.png) 
