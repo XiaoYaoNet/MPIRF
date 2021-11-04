@@ -7,6 +7,15 @@ The MPIRF is developed by Python 3.8. It could integrate different MPI reconstru
   
 The current version provides two main function files: `MPIRFmain.py` and `MPIRFUImain.py`.
 
+*Executable File* includes the MPIRF with GUI compiled into binary executable files in Windows system, MAC OS system and Ubuntu system.  
+
+In Windows, clicking file **MPIRFUImain.exe** to execute the binary files.  
+In MAC OS, clicking file **MPIRFUImain** to execute the binary files.  
+In Ubuntu, clicking file **MPIRFUImain** to execute the binary files.  
+
+In Windows system, it also include a version with GPU. The test of the version were performed using the following hardware:  
+>**GPU NVIDIA GeForce GTX 1070 8G**
+
 ## ARCHITECTURE
   
 Specifically see the paper: *Magnetic particle imaging reconstruction framework integrated with simulation of MPI scan*
@@ -29,8 +38,8 @@ To run `MPIRFUImain.py`, you also need to install:
   
 1.  `python MPIRFmain.py`, the result of the runing is shown in the figure:
 
-![](Image/Fig1.png) 
+![](./Image/Fig1.png) 
 
 2.  `python MPIRFUImain.py`, the result of the runing is shown in the figure:
 
-![](Image/Fig2.png) 
+![](./Image/Fig2.png) 
