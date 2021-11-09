@@ -7,11 +7,9 @@ The MPIRF is developed by Python 3.8. It could integrate different MPI reconstru
   
 The current version provides two main function files: `MPIRFmain.py` and `MPIRFUImain.py`.
 
-*Executable File* includes the MPIRF with GUI compiled into binary executable files in Windows system, MAC OS system and Ubuntu system.  
+*Executable File* includes the MPIRF with GUI compiled into binary executable files in Windows system.  
 
 In Windows, clicking file **MPIRFUImain.exe** to execute the binary files.  
-In MAC OS, clicking file **MPIRFUImain** to execute the binary files.  
-In Ubuntu, clicking file **MPIRFUImain** to execute the binary files.  
 
 In Windows system, it also include a version with GPU. The test of the version were performed using the following hardware:  
 >**GPU NVIDIA GeForce GTX 1070 8G**
