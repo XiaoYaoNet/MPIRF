@@ -16,7 +16,7 @@ In Windows system, it also include a version with GPU. The test of the version w
 
 ## ARCHITECTURE
   
-Specifically see the paper: *Magnetic particle imaging reconstruction framework integrated with simulation of MPI scan*
+Specifically see the paper: *A novel software framework for magnetic particle imaging reconstruction*
 
 ## INSTALLATION
   
