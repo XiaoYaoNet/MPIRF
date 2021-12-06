@@ -6,6 +6,9 @@ import numpy as np
 from Config.CommFunc import *
 from Config.ConstantList import *
 
+'''
+ScannerBase.py: The base class of the Simulation component.
+'''
 
 class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
     __metaclass__ = abc.ABCMeta
@@ -19,7 +22,8 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
                  DriveAmplitudeX,
                  DriveAmplitudeY,
                  RepetitionTime,
-                 SampleFrequency):
+                 SampleFrequency
+                 ):
         super().__init__()
 
         self._Phantom=VirtualPhantom
@@ -67,6 +71,11 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
 
         self._Rffp = self.__MAPPING()
 
+    '''
+        Since the image data is stored in an array in the computer, 
+        whose coordinate is different from the coordinate system used to scans the phantom, 
+        the MAPPING function converts coordinates to body membrane space coordinates.
+    '''
     def __MAPPING(self):
         self._Rffp[0] = self._Rffp[0] + self._Xmax
         self._Rffp[1] = self._Rffp[1] - self._Ymax
@@ -76,11 +85,13 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
         self._Rffp1=self._Rffp
         return np.around(self._Rffp) + 1
 
+    #Calculate the driving field strength.
     def __DriveStrength(self,DriveAmplitude,DriveFrequency,TSquence):
         DHx = DriveAmplitude * np.cos(2.0 * PI * DriveFrequency * TSquence + PI / 2.0) * (-1.0)
         DeriDHx = DriveAmplitude * np.sin(2.0 * PI * DriveFrequency * TSquence + PI / 2.0) * 2.0 * PI * DriveFrequency
         return DHx,DeriDHx
 
+    #Initialize the phantom.
     def __init_Phantom(self):
         self._Phantom._Picture = self._Phantom._get_Picture(self._Phantom._Concentration, self._Xn, self._Yn)
         GSc = np.zeros((self._Xn, self._Yn, 2))
@@ -94,6 +105,7 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
         self._Fn=self._Fn+1
         return GSc
 
+    #Calculate the induced voltage of magnetic particles with GPU.
     def _get_Voltage_GPU(self):
 
         GSc = self.__init_Phantom()
@@ -105,7 +117,7 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
         for i in range(self._Fn):
             Coeff = self._CoilSensitivity * self._Phantom._Mm * self._Phantom._Bcoeff * self._DeriDH[:, i]
             DHt = np.tile(self._DH[:, i], (self._Xn, self._Yn, 1))
-            Gs = np.subtract(DHt, GSc) #Gs矩阵
+            Gs = np.subtract(DHt, GSc)
             self._HFieldStrength[:, :, i] = np.sqrt(Gs[:, :, 1] ** 2 + Gs[:, :, 0] ** 2)
             DLFTemp = (1 / ((self._Phantom._Bcoeff * self._HFieldStrength[:, :, i]) ** 2)) - (
                         1 / ((np.sinh(self._Phantom._Bcoeff * self._HFieldStrength[:, :, i])) ** 2))
@@ -122,6 +134,7 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
 
         return Voltage
 
+    # Calculate the induced voltage of magnetic particles with CPU.
     def _get_Voltage_CPU(self):
 
         GSc=self.__init_Phantom()
@@ -150,6 +163,7 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
 
         return Voltage
 
+    #Abstract function. Calculate the calculate auxiliary signal, such as system matrix.
     @abc.abstractmethod
     def _get_AuxSignal(self):
         pass
@@ -162,6 +176,7 @@ class ScannerBaseClass(DataBaseClass, metaclass=abc.ABCMeta):
 
         return Voltage, AuxSignal
 
+    # #Initialize the Message.
     def _init_Message(self,AuxType):
 
         Voltage, AuxSignal=self._get_Signal()

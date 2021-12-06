@@ -19,6 +19,10 @@ from PostprocessClass.Postprocess import *
 
 import os
 
+'''
+MPIRFmain.py: Call the MPIRF module functions.
+'''
+
 class JsonDefaultEnconding(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, complex):
@@ -26,15 +30,28 @@ class JsonDefaultEnconding(json.JSONEncoder):
         if isinstance(o, np.ndarray):
             return o.tolist()
 
+'''
+Access measurement data from file and reconstrution
+#Arguments
+*FileType:     the file type(JSON OR MDF).
+*MsPath:       the file path of system matrix data.(only be used by when FileType is MDF)
+*MmPath:       the file path of measurement data.
+*MethodType:   the reconstruction method type.(system matrix or x-space)
+*itera:        the number of iterations.(only be used by when FileType is MDF)
+*theta:        the regularization parameter.(only be used by when FileType is MDF)
+*ThresholdSeg: the image threshold segmentation parameter.
+'''
 def FileMain(FileType,MsPath,MmPath,MethodType,itera,theta,ThresholdSeg):
-    if FileType==0:
 
+    if FileType==0:
         try:
+            # Call MDFReader Component to access the MDF file.
             phan = MDFReaderClass(MsPath, MmPath)
         except:
             return 1,None,None,None,None,None,None,None,None,None
 
         try:
+            # Call Pre-processing module to realize the pre-processing and verification of message dictionary data
             MDFPreprocessClass(phan.Message)
         except:
             return 2,None,None,None,None,None,None,None,None,None
@@ -42,19 +59,23 @@ def FileMain(FileType,MsPath,MmPath,MethodType,itera,theta,ThresholdSeg):
     elif FileType==1:
 
         try:
+            # Call MDFReader Component to access the JSON file.
             phan = JReaderClass(MmPath)
         except:
             return 1, None, None, None, None, None, None, None, None, None
 
         try:
+            # Call Pre-processing module to realize the pre-processing and verification of message dictionary data
             MDFPreprocessClass(phan.Message)
         except:
             return 2, None, None, None, None, None, None, None, None, None
 
     try:
         if MethodType==0:
+            # Call System Matrix component to realize image reconstruction
             ImgData = MReconClass(phan.Message, itera,np.linalg.norm(phan.Message[MEASUREMENT][AUXSIGNAL], ord='fro') * theta)
         elif MethodType==1:
+            # Call X-Space component to realize image reconstruction
             ImgData= XReconClass(phan.Message)
         else:
             raise Exception
@@ -62,6 +83,7 @@ def FileMain(FileType,MsPath,MmPath,MethodType,itera,theta,ThresholdSeg):
         return 3, None, None, None, None, None, None, None, None, None
 
     try:
+        # Call Post-processing module to realize image gray-level analysis and image threshold segmentation
         return 0,\
            ImgData.get_ImagSiganl()[1][0], \
            ImgData.get_ImagSiganl()[1][1], \
@@ -75,6 +97,27 @@ def FileMain(FileType,MsPath,MmPath,MethodType,itera,theta,ThresholdSeg):
     except:
         return 4, None, None, None, None, None, None, None, None, None
 
+'''
+Simulate measurement data from file and reconstrution
+#Arguments
+*MethodType:       the reconstruction method type.(system matrix or x-space)
+*PhanType:         the phantom type.(P shape phantom or E shape phantom)
+*Temperature:      the particle temperature.
+*Diameter:         the diameter of the particle core.
+*MagSaturation:    the saturation magnetization of the particle.
+*Concentration:    the particle concentration of phantom.
+*SelectGradietX:   the gradient strength of the selection field in the x-direction.
+*SelectGradietY:   the gradient strength of the selection field in the y-direction.
+*DriveFrequencyX:  the frequency of the drive field strength in the x-direction.
+*DriveFrequencyY:  the frequency of the drive field strength in the y-direction.
+*DriveAmplitudeX:  the amplitude of the drive field strength in the x-direction.
+*DriveAmplitudeY:  the amplitude of the drive field strength in the y-direction.
+*RepetitionTime:   the repeat time of trajectory one period.
+*SampleFrequency:  the frequency of sampling.
+*itera:            the number of iterations.(only be used by when FileType is MDF)
+*theta:            the regularization parameter.(only be used by when FileType is MDF)
+*ThresholdSeg:     the image threshold segmentation parameter.
+'''
 def SimulationMain(MethodType,
                    PhanType,Temperature,Diameter,MagSaturation,Concentration,
                    SelectGradietX,SelectGradietY,
@@ -84,14 +127,17 @@ def SimulationMain(MethodType,
 
     try:
         if PhanType==0:
+            # Create a P shape phantom.
             phan = PPhantomClass(Temperature,Diameter,MagSaturation,Concentration)
         elif PhanType==1:
+            # Create a E shape phantom.
             phan = EPhantomClass(Temperature, Diameter, MagSaturation, Concentration)
     except:
         return 1, None, None, None, None, None, None
 
     if MethodType==0:
         try:
+            # Call System-matrix base scanner Component to simulate system matrix scanner.
             scanner = MScannerClass(phan,
                                 SelectGradietX, SelectGradietY,
                                 DriveFrequencyX, DriveFrequencyY, DriveAmplitudeX, DriveAmplitudeY,
@@ -100,11 +146,13 @@ def SimulationMain(MethodType,
             return 1, None, None, None, None, None, None
 
         try:
+            # Call Pre-processing module to realize the pre-processing and verification of message dictionary data
             PreprocessClass(scanner.Message)
         except:
             return 2, None, None, None, None, None, None
 
         try:
+            # Call System Matrix component to realize image reconstruction
             ImgData = MReconClass(scanner.Message,Itera,Theta)
             ResultImage = ImgData.get_ImagSiganl()[1][0]
         except:
@@ -112,6 +160,7 @@ def SimulationMain(MethodType,
 
     elif MethodType==1:
         try:
+            # Call X-Space base scanner Component to simulate system matrix scanner.
             scanner = XScannerClass(phan,
                               SelectGradietX,SelectGradietY,
                               DriveFrequencyX,DriveFrequencyY,DriveAmplitudeX,DriveAmplitudeY,
@@ -120,11 +169,13 @@ def SimulationMain(MethodType,
             return 1, None, None, None, None, None, None
 
         try:
+            # Call Pre-processing module to realize the pre-processing and verification of message dictionary data
             PreprocessClass(scanner.Message)
         except:
             return 2, None, None, None, None, None, None
 
         try:
+            # Call X-Space component to realize image reconstruction
             ImgData = XReconClass(scanner.Message)
             ResultImage = ImgData.get_ImagSiganl()[1][0]
         except:
@@ -133,6 +184,7 @@ def SimulationMain(MethodType,
 
 
     try:
+        # Call Post-processing module to realize image gray-level analysis and image threshold segmentation
         return 0,\
            phan.get_PhantomMatrix(), \
            ResultImage, \

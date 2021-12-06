@@ -4,6 +4,10 @@ from ReconClass.BaseClass.ReconBase import *
 from Config.ConstantList import *
 import numpy as np
 
+'''
+MRecon.py: The MRecon Class reconstruct the MPI image signal based on the system matrix method.
+'''
+
 class MReconClass(ReconBaseClass):
 
     def __init__(self, Message, Iterations=20, Lambd=1e-6):
@@ -12,12 +16,14 @@ class MReconClass(ReconBaseClass):
         self.__Lambd=Lambd
         self._ImageRecon(Message[MEASUREMENT][AUXSIGNAL], Message[MEASUREMENT][MEASIGNAL], Message[MEASUREMENT][MEANUMBER])
 
+    #Call image reconstruction algorithm and Resize image.
     def _ImageRecon(self, A, b, size):
         self._ImagSignal.append(self.__Kaczmarz(A, b, self.__Iterations, self.__Lambd))
         self._ImagSignal.append(self._ImageReshape(self._ImagSignal[0],size))
 
         return True
 
+    #Resize image.
     def _ImageReshape(self, c, size):
         x = size[0]
         y = size[1]
@@ -53,7 +59,7 @@ class MReconClass(ReconBaseClass):
             energy[m] = np.linalg.norm(A[m, :])
         return energy
 
-    # function() Kaczmarz comes from https://github.com/MagneticParticleImaging/MDF/tree/master/python
+    # kaczmarz algorithm. The Kaczmarz function comes from https://github.com/MagneticParticleImaging/MDF/tree/master/python
     def __Kaczmarz(self, A, b, iterations=10, lambd=0, enforceReal=False, enforcePositive=False, shuffle=False):
         M = A.shape[0]
         N = A.shape[1]

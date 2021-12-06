@@ -2,6 +2,10 @@
 
 from PreprocessClass.BaseClass.Preprocess import *
 
+'''
+This is a template file.
+'''
+
 class XXXPreprocessClass(PreprocessClass):
     def __init__(self,Message):
         self.Cutting(Message)

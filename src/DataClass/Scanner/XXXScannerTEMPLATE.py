@@ -2,6 +2,10 @@
 
 from DataClass.BassClass.ScannerBase import *
 
+'''
+This is a template file.
+'''
+
 class XXXScannerClass(ScannerBaseClass):
     def __init__(self,
                  VirtualPhantom,

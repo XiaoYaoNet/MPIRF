@@ -1,6 +1,11 @@
 # coding=UTF-8
 from ReconClass.BaseClass.ReconBase import *
 from Config.ConstantList import *
+
+'''
+This is a template file.
+'''
+
 class XXXReconClass(ReconBaseClass):
     def __init__(self, Message,XXXMEMBERTEMPLATE):
         super().__init__()

@@ -28,5 +28,6 @@ class XScannerClass(ScannerBaseClass):
         self._init_Message(2)
         self.Message[EXTENDED]= {STEP:self._Step,RFFP:self._Rffp2,FFP:self._Rffp0}
 
+    # Calculate the field-free area velocity vector.
     def _get_AuxSignal(self):
         return np.divide(self._DeriDH, np.tile(self._Gg, (1, np.shape(self._DeriDH)[1])))

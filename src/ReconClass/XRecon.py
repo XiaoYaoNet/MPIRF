@@ -5,6 +5,9 @@ from ReconClass.BaseClass.ReconBase import *
 from Config.ConstantList import *
 from scipy.interpolate import griddata
 
+'''
+XRecon.py: The XRecon Class reconstruct the MPI image signal based on the x-space method.
+'''
 
 class XReconClass(ReconBaseClass):
 
@@ -12,13 +15,14 @@ class XReconClass(ReconBaseClass):
         super().__init__()
         self._ImageRecon(Message)
 
-
+    # Call image reconstruction algorithm and Resize image.
     def _ImageRecon(self, Message):
         self._ImagSignal.append(self.__XSpace(Message[MEASUREMENT][MEASIGNAL], Message[MEASUREMENT][AUXSIGNAL]))
         self._ImagSignal.append(self._ImageReshape(Message[EXTENDED][RFFP], Message[EXTENDED][FFP],Message[EXTENDED][STEP]))
 
         return True
 
+    # Resize image.
     def _ImageReshape(self, Rffp, Ffp, Step):
         pointx = np.arange(min(Rffp[0][:]), max(Rffp[0][:]) + Step, Step)
         pointy = np.arange(min(Rffp[1][:]), max(Rffp[1][:]) + Step, Step)
@@ -29,6 +33,7 @@ class XReconClass(ReconBaseClass):
         ImgTan = ImgTan / np.max(ImgTan)
         return [ImgTan]
 
+    #x-space algorithm
     def __XSpace(self,U, Vffp):
 
         temp = Vffp ** 2

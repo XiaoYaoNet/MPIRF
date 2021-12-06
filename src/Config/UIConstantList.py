@@ -1,5 +1,9 @@
 #coding=UTF-8
 
+'''
+UIConstantList.py: Chinese UI interface.
+'''
+
 TITLE="MPI重建"
 
 

@@ -4,6 +4,10 @@ from DataClass.BassClass.ReaderBase import *
 import json
 import numpy as np
 
+'''
+JReader.py: Access measurement data from a JSON file.
+'''
+
 class JsonDefaultEnconding(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, complex):
@@ -18,12 +22,14 @@ class JReaderClass(ReaderBaseClass):
         self._init_FileHandle()
         self._init_Message()
 
+    #Get the file handle of the Json.
     def _init_FileHandle(self):
         with open(self.__JNameFile, 'r', encoding='utf8') as fp:
             self.Message = json.load(fp)
 
         return True
 
+    #Initialize the Message.
     def _init_Message(self):
 
         if self.Message[MEASUREMENT][TYPE]==SYSTEMMATRIX:

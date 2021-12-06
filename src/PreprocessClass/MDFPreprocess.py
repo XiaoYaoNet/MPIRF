@@ -6,11 +6,16 @@ from Config.ConstantList import *
 from PreprocessClass.BaseClass.Preprocess import *
 import time
 
+'''
+MDFPreprocess.py: override function DataCutting() to add a function removing the low frequency signal from the array of the MeaSignal key.
+'''
+
 class MDFPreprocessClass(PreprocessClass):
     def __init__(self,Message):
         self.DataCutting(Message)
         super().__init__(Message)
 
+    #Overriding DataCutting functions
     def DataCutting(self, Message, Threshold=80e3):
 
         end = np.where(Message[MEASUREMENT][BGFLAG] != 0)

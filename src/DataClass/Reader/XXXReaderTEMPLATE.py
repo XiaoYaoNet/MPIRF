@@ -2,6 +2,9 @@
 
 from DataClass.BassClass.ReaderBase import *
 
+'''
+This is a template file.
+'''
 
 class XXXReaderClass(ReaderBaseClass):
     def __init__(self, JNameFile):

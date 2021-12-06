@@ -32,6 +32,7 @@ class MScannerClass(ScannerBaseClass):
         self._init_Message(1)
         self.__reset_Voltage()
 
+    # The measurement signal is Fourier transformed.
     def __reset_Voltage(self):
         self.Message[MEASUREMENT][MEASIGNAL] = np.transpose(self.Message[MEASUREMENT][MEASIGNAL])
         temp = np.fft.fft(np.transpose(self.Message[MEASUREMENT][MEASIGNAL]) * 1000)
@@ -39,6 +40,7 @@ class MScannerClass(ScannerBaseClass):
         self.Message[MEASUREMENT][MEASIGNAL] = np.add(temp[:, 0], temp[:, 1])
         return True
 
+    #Calculate the system matrix of MPI scanner.
     def _get_AuxSignal(self):
 
         C = np.ones((self._Xn, self._Yn,2))

@@ -5,6 +5,9 @@ import numpy.fft
 from Config.ConstantList import *
 import time
 
+'''
+Preprocess.py: The base class of the Pre-processing module.
+'''
 
 class PreprocessClass(object):
 
@@ -13,6 +16,7 @@ class PreprocessClass(object):
         if code==False:
             print("Preprocess class: Message["+object+ "]["+key+"] Datavalidation() fail!")
 
+    #Compare data types.
     def _get_Type(self, variate,type):
         if isinstance(variate, type):
             return True
@@ -21,18 +25,21 @@ class PreprocessClass(object):
         else:
             return False
 
+    #Compare the types of array elements.
     def _get_TypeArray(self, variate, type1):
         if str(variate.dtype) in type1:
             return True
         else:
             return False
 
+    # Compare the types of array elements.
     def _get_TypeArray2(self, variate, type1, type2):
         if str(variate.dtype) in type1 or str(variate.dtype) in type2:
             return True
         else:
             return False
 
+    #To verify whether all key-values whose value is non-None in the Message correspond to defined data types.
     def DataValidation(self, Message):
 
         # MAGNETICPARTICL Object
@@ -163,6 +170,7 @@ class PreprocessClass(object):
 
         return True,"",""
 
+    #To performs special deal with the key-values in the Message structure.
     def DataStandardization(self, Message):
         mm=0.0
         b0=0.0
@@ -181,6 +189,7 @@ class PreprocessClass(object):
 
         return True
 
+    #To remove certain signal data from the array of MeaSiganl key and AuxSiganl key of Measurement object in Message
     def DataCutting(self,Message):
         Message[MEASUREMENT][AUXSIGNAL] = Message[MEASUREMENT][AUXSIGNAL][:, :, Message[SAMPLE][BGFLAG] == False]
 

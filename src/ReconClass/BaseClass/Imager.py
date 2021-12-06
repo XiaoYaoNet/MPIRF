@@ -3,6 +3,7 @@ import matplotlib.pyplot as plot
 
 class ImagerClass(object):
 
+    #Save the image data on the disk.
     def WriteImage(ImageData,direction, filename):
         if ImageData.ndim==1:
             plot.bar(range(256), ImageData)

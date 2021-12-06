@@ -1,6 +1,10 @@
 # coding=UTF-8
 
-# MDFReader
+'''
+ConstantList.py:The global constants of the MPIRF are defined in this module.
+'''
+
+# The global constants used by MDFReader
 SYSMTRMEASDATA='/measurement/data'
 
 MEASSIGNALDATA='/measurement/data'
@@ -11,7 +15,7 @@ NUMSAMPLINGPOINTS='/acquisition/receiver/numSamplingPoints'
 
 CALIBRATIONSIZE='/calibration/size'
 
-# DataBase
+# The global constants used by DataBase
 MAGNETICPARTICL  =  'MagneticParticle'
 DIAMETER         =  'Diameter'
 SATURATIONMAG    =  'SaturationMag'
@@ -56,13 +60,13 @@ FFL              =  2
 SYSTEMMATRIX     =  1
 FFAVELOCITY      =  2
 
-# DataBase Xpace and Deconvolution Extended
+# DataBase and Xpace Extended
 EXTENDED='Extended'
 RFFP='Rffp'
 FFP='Ffp'
 STEP='Step'
 
-# Phantom
+# The global constants used by Phantom
 PI = 3.1416
 KB = 1.3806488e-23
 TDT = 273.15

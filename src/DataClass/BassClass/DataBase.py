@@ -3,9 +3,13 @@
 import abc
 from Config.ConstantList import *
 
+'''
+DataBase.py: The base class of the data access module.
+'''
 
 class DataBaseClass(metaclass=abc.ABCMeta):
     def __init__(self):
+        #Define the Message dictionary
         self.Message = {
             MAGNETICPARTICL:{
                 DIAMETER : None,
@@ -46,6 +50,7 @@ class DataBaseClass(metaclass=abc.ABCMeta):
             }
         }
 
+    #Abstract function. Initialize the Message dictionary.
     @abc.abstractmethod
     def _init_Message(self): pass
 

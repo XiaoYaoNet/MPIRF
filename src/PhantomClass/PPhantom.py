@@ -3,6 +3,10 @@ import numpy as np
 from Config.ConstantList import *
 from PhantomClass.BassClass.Phantom import *
 
+'''
+PPhantom.py: The phantom class of P shape.
+'''
+
 class PPhantomClass(PhantomClass):
     def __init__(self,Temperature=20.0,Diameter=30e-9,MagSaturation=8e5, Concentration=5e7 ):
 
@@ -11,6 +15,7 @@ class PPhantomClass(PhantomClass):
                          MagSaturation,
                          Concentration)
 
+    # Return the matrix of the 'P' phantom image.
     def _get_Picture(self,Concentration,Xn,Yn):
         self._Xn = Xn
         self._Yn = Yn

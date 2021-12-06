@@ -5,6 +5,9 @@ import numpy as np
 import json
 from DataClass.BassClass.ReaderBase import *
 
+'''
+MDFReader.py: Access measurement data from a MDF file.
+'''
 
 class ComplexEnconding(json.JSONEncoder):
     def default(self, o):
@@ -21,6 +24,7 @@ class MDFReaderClass(ReaderBaseClass):
         self._init_FileHandle()
         self._init_Message()
 
+    # Get the file handle of the HDF5.
     def _init_FileHandle(self):
 
         self.__SMF = h5py.File(self.__SMNameFile, 'r')
@@ -49,6 +53,7 @@ class MDFReaderClass(ReaderBaseClass):
         S = self.__SMF[CALIBRATIONSIZE]
         return S[:]
 
+    # Initialize the Message.
     def _init_Message(self):
 
         self._set_MessageValue(MEASUREMENT, AUXSIGNAL, self.__get_SMData())
